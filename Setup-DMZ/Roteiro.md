@@ -51,17 +51,111 @@
     terraform -v
     ```
 
-### 3. Configuração do tfstate
+### 3. Configuração do tfstate Localmente
 
-1. Configure o tfstate localmente.
-2. Salve o tfstate junto com o código no repositório GitHub:
+O estado do Terraform (tfstate) armazena informações sobre sua infraestrutura. Para configurar o tfstate localmente, siga os passos abaixo:
+
+1. **Crie um Diretório para o Projeto**:
     ```bash
-    git init
-    git add .
-    git commit -m "Initial commit with Terraform configuration"
-    git remote add origin <your-github-repo-url>
-    git push -u origin master
+    mkdir meu_projeto_terraform
+    cd meu_projeto_terraform
     ```
+
+2. **Crie um Arquivo de Configuração do Terraform (`main.tf`)**:
+    ```hcl
+    provider "aws" {
+      region = "us-east-1"
+    }
+
+    resource "aws_vpc" "main" {
+      cidr_block = "10.0.0.0/16"
+    }
+
+    resource "aws_subnet" "dmz" {
+      vpc_id            = aws_vpc.main.id
+      cidr_block        = "10.0.1.0/24"
+      availability_zone = "us-east-1a"
+    }
+
+    resource "aws_instance" "openvpn_server" {
+      ami           = "ami-0c55b159cbfafe1f0"
+      instance_type = "t2.micro"
+      subnet_id     = aws_subnet.dmz.id
+      key_name      = var.key_name
+
+      tags = {
+        Name = "OpenVPN Server"
+      }
+
+      user_data = <<-EOF
+        #!/bin/bash
+        yum update -y
+        yum install -y openvpn
+      EOF
+    }
+
+    resource "aws_instance" "ldap_server" {
+      ami           = "ami-0c55b159cbfafe1f0"
+      instance_type = "t2.micro"
+      subnet_id     = aws_subnet.dmz.id
+      key_name      = var.key_name
+
+      tags = {
+        Name = "LDAP Server"
+      }
+
+      user_data = <<-EOF
+        #!/bin/bash
+        yum update -y
+        yum install -y 389-ds-base
+        setup-ds-admin.pl -s -f setup.inf
+      EOF
+    }
+
+    resource "aws_instance" "web_server" {
+      ami           = "ami-0c55b159cbfafe1f0"
+      instance_type = "t2.micro"
+      subnet_id     = aws_subnet.dmz.id
+      key_name      = var.key_name
+
+      tags = {
+        Name = "Web Server"
+      }
+
+      user_data = <<-EOF
+        #!/bin/bash
+        yum update -y
+        yum install -y nginx
+        systemctl start nginx
+        systemctl enable nginx
+      EOF
+    }
+
+    output "openvpn_server_ip" {
+      value = aws_instance.openvpn_server.public_ip
+    }
+    ```
+
+3. **Inicialize o Terraform**:
+    ```bash
+    terraform init
+    ```
+
+4. **Configure o Estado Localmente**:
+   Por padrão, o Terraform armazena o estado localmente no arquivo `terraform.tfstate` no diretório do projeto.
+
+5. **Execute o Plano do Terraform**:
+    ```bash
+    terraform plan
+    ```
+
+6. **Aplique o Plano do Terraform**:
+    ```bash
+    terraform apply
+    ```
+
+7. **Verifique o Arquivo de Estado**:
+   Após a execução do `terraform apply`, você verá um arquivo chamado `terraform.tfstate` no diretório do projeto. Este arquivo contém o estado atual da infraestrutura gerenciada pelo Terraform.
 
 ### 4. Configuração do AWS CLI
 
@@ -156,4 +250,12 @@ resource "aws_instance" "web_server" {
   user_data = <<-EOF
     #!/bin/bash
     yum update -y
-    y
+    yum install -y nginx
+    systemctl start nginx
+    systemctl enable nginx
+  EOF
+}
+
+output "openvpn_server_ip" {
+  value = aws_instance.openvpn_server.public_ip
+}

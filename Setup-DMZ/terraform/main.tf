@@ -62,20 +62,44 @@ resource "aws_security_group" "openvpn_sg" {
   }
 }
 
+# (Passo 1) Criação de uma Chave SSH (pode usar sua chave existente)
+# Se você não tem uma chave SSH, use este bloco:
+resource "tls_private_key" "my_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Criando um par de chaves na AWS com a chave pública gerada
+resource "aws_key_pair" "deployer" {
+  key_name   = "my_key_pair"
+  public_key = tls_private_key.my_key.public_key_openssh
+}
 
 resource "aws_instance" "openvpn_server" {
-  ami           = "ami-098143f68772b34f5"  # Amazon Linux 2 AMI
+  ami           = "ami-04a81a99f5ec58529"  # Amazon Ununtu 24.04
   instance_type          = "t2.micro"
+  key_name      = aws_key_pair.deployer.key_name  # Associa a chave SSH
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.openvpn_sg.id]
 
   tags = {
-    Name = "OpenVPN-Server"
+    Name = "OpenVPN-Server-novo"
   }
 
-  user_data = file("openvpn-install.sh")
+#  user_data = file("openvpn-install.sh")
 }
 
 output "openvpn_server_public_ip" {
   value = aws_instance.openvpn_server.public_ip
+}
+
+# (Passo 3 - Opcional) Saída da chave privada, se gerada via Terraform
+output "private_key_pem" {
+  value     = tls_private_key.my_key.private_key_pem
+  sensitive = true
+}
+
+# (Passo 3 - Opcional) Saída do nome da chave SSH
+output "key_pair_name" {
+  value = aws_key_pair.deployer.key_name
 }

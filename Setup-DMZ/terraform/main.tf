@@ -86,7 +86,7 @@ resource "aws_instance" "openvpn_server" {
     Name = "OpenVPN-Server-novo"
   }
 
-#  user_data = file("openvpn-install.sh")
+  user_data = file("openvpn-install.sh")
 }
 
 output "openvpn_server_public_ip" {

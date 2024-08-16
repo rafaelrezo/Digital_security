@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
+sudo su
+
 # Atualizar sistema e instalar OpenVPN e Easy-RSA
-yum update -y
-yum install -y openvpn easy-rsa
+sudo apt update -y
+sudo apt install -y openvpn easy-rsa
 
 # Configurar Easy-RSA
 make-cadir ~/openvpn-ca
@@ -18,20 +20,31 @@ set_var EASYRSA_REQ_OU         "MyOU"
 EOF
 
 # Construir a CA
+export LOG="/tmp/log_terragorm.txt"
+export EASYRSA_BATCH="yes"
+export EASYRSA_REQ_CN="Server"
+
 ./easyrsa init-pki
 ./easyrsa build-ca nopass
 
+echo "./easyrsa build-ca nopass" >> $LOG
+
 # Criar certificado e chave para o servidor
 ./easyrsa gen-req server nopass
+
+echo "./easyrsa gen-req server nopass" >> $LOG
+
 ./easyrsa sign-req server server
 ./easyrsa gen-dh
-openvpn --genkey --secret ta.key
+openvpn --genkey secret ta.key
+
+echo "openvpn --genkey --secret ta.key" >> $LOG
 
 # Copiar certificados e chaves para o diretório de configuração do OpenVPN
 cp pki/ca.crt pki/private/server.key pki/issued/server.crt pki/dh.pem ta.key /etc/openvpn/
 
-# Criar arquivo de configuração do servidor OpenVPN
-cat > /etc/openvpn/server.conf <<EOF
+# Criar arquivo de configuração do servidor OpenVPN denied
+sudo cat > /etc/openvpn/server.conf <<EOF
 port 1194
 proto udp
 dev tun
@@ -60,6 +73,7 @@ EOF
 # Iniciar e habilitar o serviço OpenVPN
 systemctl start openvpn@server
 systemctl enable openvpn@server
+systemctl daemon-reload
 
 # Gerar certificado e chave para um cliente
 cd ~/openvpn-ca

@@ -76,8 +76,8 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_instance" "openvpn_server" {
-  ami           = "ami-04a81a99f5ec58529"  # Amazon Ununtu 24.04
-  instance_type          = "t2.micro"
+  ami           = "ami-0c14ff330901e49ff"  # Amazon Ununtu 24.04
+  instance_type          = "t4g.small"
   key_name      = aws_key_pair.deployer.key_name  # Associa a chave SSH
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.openvpn_sg.id]

@@ -54,6 +54,13 @@ resource "aws_security_group" "openvpn_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -76,8 +83,8 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_instance" "openvpn_server" {
-  ami           = "ami-04a81a99f5ec58529"  # Amazon Ununtu 24.04
-  instance_type          = "t2.micro"
+  ami           = "ami-0e86e20dae9224db8"  # Amazon Ununtu 24.04
+  instance_type          = "t2.small"
   key_name      = aws_key_pair.deployer.key_name  # Associa a chave SSH
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.openvpn_sg.id]
@@ -86,7 +93,7 @@ resource "aws_instance" "openvpn_server" {
     Name = "OpenVPN-Server-novo"
   }
 
-#  user_data = file("openvpn-install.sh")
+  user_data = file("openvpn-install.sh")
 }
 
 output "openvpn_server_public_ip" {

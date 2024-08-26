@@ -150,3 +150,8 @@ output "openvpn_server_ip" {
   value = aws_instance.openvpn_server.public_ip
 }
 ```
+
+
+terraform output -raw private_key_pem > my_key.pem
+sudo chmod 400 my_key.pem 
+ssh -i "my_key.pem" ubuntu@174.129.96.183

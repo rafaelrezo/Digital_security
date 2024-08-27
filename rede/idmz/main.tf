@@ -30,11 +30,3 @@ resource "aws_security_group" "dmz_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-output "subnet_id" {
-  value = aws_subnet.dmz_subnet.id
-}
-
-output "security_group_id" {
-  value = aws_security_group.dmz_sg.id
-}

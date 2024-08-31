@@ -1,20 +1,21 @@
-# Security Group para a Rede Industrial
-resource "aws_security_group" "firewall_industrial_sg" {
-  name_prefix = "firewall_industrial"
-  description = "Security group for industrial network interface"
-  vpc_id      = "vpc-035de6a04b60456dc"
+# infra\security_group\idmz.tf
+
+resource "aws_security_group" "idmz_sg" {
+  name_prefix = "idmz_sg"
+  description = "Security group for IDMZ Subnet"
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["172.31.3.5/32"]  # Permitir apenas o IP associado à interface industrial do firewall
+    cidr_blocks = ["172.31.2.1/24"]  # Permitir tráfego de ingresso apenas do gateway
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["172.31.3.0/24"]  # Permitir tráfego de saída dentro da sub-rede industrial
+    cidr_blocks = ["172.31.2.0/24"]  # Permitir tráfego de saída dentro da subnet
   }
 }

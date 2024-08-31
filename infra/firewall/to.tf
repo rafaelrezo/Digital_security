@@ -1,3 +1,5 @@
+# infra\firewall\to.tf
+
 resource "aws_instance" "firewall_to" {
   ami           = "ami-0e86e20dae9224db8"
   instance_type = "m5a.large"

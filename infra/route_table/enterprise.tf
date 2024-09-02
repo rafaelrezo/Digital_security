@@ -5,15 +5,15 @@ resource "aws_route_table" "enterprise_rt" {
 
   route {
     cidr_block = "0.0.0.0/0"  # Rota padrão para a internet
-    gateway_id = "igw-xxxxxxxx"  # Substitua pelo ID do Internet Gateway
+    network_interface_id = var.enterprise_eni_firewall_to_id
   }
 
   tags = {
-    Name = "Corporativa Route Table"
+    Name = "Enterprise Route Table"
   }
 }
 
 resource "aws_route_table_association" "enterprise_rta" {
   subnet_id      = var.enterprise_subnet_id
-  route_table_id = aws_route_table.corporativa_rt.id
+  route_table_id = aws_route_table.enterprise_rt.id
 }

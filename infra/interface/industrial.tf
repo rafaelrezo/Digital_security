@@ -1,8 +1,8 @@
 # infra\interface\industrial.tf
 
-resource "aws_network_interface" "firewall_externo_interface" {
-  subnet_id       = "subnet-04b636f5d719f36f9"
-  description     = "Interface Externa do Firewall"
-  private_ips     = ["172.31.1.6"]
-  security_groups = [aws_security_group.firewall_externo_sg.id]
+resource "aws_network_interface" "industrial_eni_firewall_to" {
+  subnet_id       = var.industrial_subnet_id
+  description     = "Interface da Rede Industrial no Firewall TO"
+  private_ips     = [var.industrial_default_gateway]
+  security_groups = [var.industrial_sg_id]
 }

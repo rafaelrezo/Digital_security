@@ -22,20 +22,24 @@ O objetivo é simular uma infraestrutura industrial segundo o modelo de purdue e
 | **Máquinas Diversas**                | Instâncias EC2 de diversos tipos que podem ser distribuídas nas três redes (Cell Area Zone, IDMZ da TO, e Rede Corporativa), herdando as respectivas configurações. |
 | **Firewalls**                        | Dois firewalls: um simulado por uma instância EC2 (Firewall TO) e outro como Security Group (Firewall Corporativo). O Firewall TO possui duas interfaces.           |
 
-   <div align="center"> <img src="docs/modelo_purdue.png" alt="Modelo Purdue" width="800px"> </div>
+   <div align="center"> <img src="docs/modelo_purdue_implementado_ate_entao.png" alt="Modelo Purdue" width="800px"> </div>
+
+Podemos ver que essa primeira versão do projeto abstraiu a rede 'Enterprise' — coorporativa. No caso, ela não recebeu nenhum service nessa primeira versão e como estamos com foco em testar o VPN e as ferramentas de exploit, fomos bem objetivos em subir essa parte da infraestrutura. 
+
+A branch `feature/subnet-enterprise` já está com uma lógica voltada para criar 4 interfaces no firewall, sendo uma uma interface dedicada a ser a pública. Mas isso é problemático pois não é qualquer ami que possui 4 cards de interface na AWS.
+
 
 ## Sobre como executar o projeto
 
 Eu recomendo fortemente que você acesse o console da AWS e vá observando a criação e instancia desses diversos componentes, na ordem que estou falando.
 
-Mas, se você quiser, pode simplesmente executar todo o projeto e toda a infraestrutura irá subir de uma vez.
+Mas, se você quiser, pode simplesmente executar todo o projeto e toda a infraestrutura irá subir de uma vez. Para isso basta descomentar todos os blocos no `infra/main.tf`.
 
-> **Nota 1º** — Ao executar os terraforms individualmente, você guardará o estado individual desses recursos e passará a ser obrigado a gerenciar o estado deles individualmente.
-> **Nota 2º** — Infelizmente, não é possível automatizar a criação das chaves `.pem` via terraform, porque uma vez que elas são criadas desta forma você não conseguirá baixa-las, daí não conseguirá utiliza-las. A única coisa que precisará criar manualmente, caso queira acessar a máquina em questão.
+> **Nota 1º** — Infelizmente, não é possível automatizar a criação das chaves `.pem` via terraform, porque uma vez que elas são criadas desta forma você não conseguirá baixa-las, daí não conseguirá utiliza-las. A única coisa que precisará criar manualmente, caso queira acessar a máquina em questão.
 
 Os dois principais recursos (serviços) da AWS envolvidos aqui são:
 
-- `EC2` → Elastic Compute Cloud, usado para abrigar recursos e subserviços **relacionados à máquinas**;
+- `EC2` → Elastic Compute Cloud, usado para abrigar recursos e subserviços **relacionados à instancias de máquinas**;
 - `VPC` → Virtual Private Cloud, usado para abrigar recursos e subserviços **relacionados à infraestrutura de rede**;
 
 Precisamos de somente uma VPC para abrigar todos os recursos que iremos criar. Nativamente, você já possui uma VPC, pois a única forma de 'existir' na AWS é tendo uma 'rede privada' dentro dela. Sua VPC terá obrigatóriamente — não consiguirá excluir e alterar:
@@ -48,9 +52,9 @@ Precisamos de somente uma VPC para abrigar todos os recursos que iremos criar. N
 
 É importante entender que sem esses recursos, todos sob uma mesma VPC, são fundamentais para instanciar uma máquina EC2, pois do contrário não há como acessa-la. Com efeito, conforme você vai instanciando máquinas no EC2, desatentamente, pode criar vários recursos desses — principalmente security groups — o que acaba por poluir e, a depender do recurso, encecarecer seu ambiente.
 
-### Crie suas subnets
+### Criando as subnets
 
-A primeira coisa que você pode testar é a criação das subnets em `.\rede`. Ao estar na raiz do projeto, executando o comando `terraform apply`.
+A primeira coisa que você pode testar é a criação das subnets em `.infra\rede`. Ao estar na raiz do projeto, executando o comando `terraform apply`. Após executar esse comando — só conseguirá fazer isso se estiver autenticado, olhe a seção [Sobre autenticação na AWS Academy](#sobre-autenticação-na-aws-academy) —
 
 ## Sobre autenticação na AWS Academy
 

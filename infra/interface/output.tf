@@ -11,7 +11,3 @@ output "idmz_eni_firewall_to_id" {
 output "industrial_eni_firewall_to_id" {
   value = aws_network_interface.industrial_eni_firewall_to.id
 }
-
-output "public_eni_firewall_to_id" {
-  value = aws_network_interface.public_eni_firewall_to.id
-}

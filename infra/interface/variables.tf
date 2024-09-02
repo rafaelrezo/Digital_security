@@ -52,17 +52,17 @@ variable "industrial_sg_id" {
 
 # Variables para Interface de IP público
 
-variable "public_subnet_id" {
-    type        = string
-    description = "Identificador único da Subnet Enterprise"
-}
+# variable "public_subnet_id" {
+#     type        = string
+#     description = "Identificador único da Subnet Enterprise"
+# }
 
 # variable "public_subnet_cidr" {
 #     type        = string
 #     description = "Identificador único da Subnet Enterprise"
 # }
 
-variable "default_sg_id" {
-    type        = string
-    description = "Identificador único da Subnet Enterprise"
-}
+# variable "default_sg_id" {
+#     type        = string
+#     description = "Identificador único da Subnet Enterprise"
+# }

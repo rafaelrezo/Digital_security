@@ -11,7 +11,3 @@ output "idmz_subnet_id" {
 output "industrial_subnet_id" {
   value = aws_subnet.industrial_subnet.id
 }
-
-output "public_subnet_id" {
-  value = aws_subnet.public_subnet.id
-}

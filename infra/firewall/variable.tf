@@ -34,8 +34,3 @@ variable "industrial_eni_firewall_to_id" {
   description = "ID da VPC para as subnets e security groups"
   type        = string
 }
-
-variable "public_eni_firewall_to_id" {
-  description = "ID da VPC para as subnets e security groups"
-  type        = string
-}
